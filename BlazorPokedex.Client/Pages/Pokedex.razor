@@ -1,0 +1,41 @@
+﻿@page "/"
+
+@using Services
+
+@inject IPokeApiClient PokeApiClient
+
+<h3>Pokedex</h3>
+
+@if(pokemons == null){
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        @for (int i = 0; i < numberOfRows; i++)
+        {
+            <div class="row">
+                @foreach (var poke in pokemons.Skip(i * 6).Take(6))
+                {
+                    <div class="card pokeCard mb-4 bg-@(poke.Types.FirstOrDefault().PokemonType.Name)">
+                        <div class="card-body">
+                            <h4 class="card-title">@poke.Name</h4>
+                            <img src="@poke.Sprites.Front" class="img-fluid" />
+                        </div>
+                    </div>
+                    
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    IEnumerable<Pokemon> pokemons;
+    public int numberOfRows { get; set; } = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pokemons = await PokeApiClient.GetAllPokemons();
+    }
+}
